@@ -1,29 +1,490 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Prayoga Setiawan</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Prayoga Setiawan</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Syne:wght@700;800&family=DM+Sans:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg: #050508;
+      --grad1: #0a0a1a;
+      --grad2: #0d0720;
+      --grad3: #060612;
+      --accent: #7c5cbf;
+      --accent2: #4f8ef7;
+      --accent3: #a78bfa;
+      --text: #e8e6f0;
+      --muted: #7a738f;
+      --card: rgba(255,255,255,0.035);
+      --border: rgba(255,255,255,0.07);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── animated gradient bg ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 20% 10%, rgba(76,29,149,0.35) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 50% at 80% 80%, rgba(30,20,80,0.45) 0%, transparent 55%),
+        radial-gradient(ellipse 50% 40% at 50% 50%, rgba(15,10,40,0.6) 0%, transparent 70%),
+        linear-gradient(160deg, #0a0a1a 0%, #060612 40%, #080418 70%, #050508 100%);
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    /* subtle noise texture */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      background-size: 200px;
+      opacity: 0.5;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .wrapper {
+      position: relative;
+      z-index: 1;
+      max-width: 520px;
+      margin: 0 auto;
+      padding: 60px 24px 80px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0;
+    }
+
+    /* ── floating orbs ── */
+    .orb {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(80px);
+      pointer-events: none;
+      z-index: 0;
+      animation: drift 12s ease-in-out infinite alternate;
+    }
+    .orb-1 { width: 300px; height: 300px; background: rgba(124,92,191,0.18); top: -80px; left: -80px; animation-delay: 0s; }
+    .orb-2 { width: 250px; height: 250px; background: rgba(79,142,247,0.12); bottom: 100px; right: -60px; animation-delay: -5s; }
+    .orb-3 { width: 180px; height: 180px; background: rgba(167,139,250,0.1); top: 50%; left: 50%; transform: translate(-50%,-50%); animation-delay: -3s; }
+
+    @keyframes drift {
+      from { transform: translate(0, 0) scale(1); }
+      to { transform: translate(30px, 20px) scale(1.1); }
+    }
+
+    /* ── avatar ── */
+    .avatar-wrap {
+      position: relative;
+      margin-bottom: 28px;
+      animation: fadeUp 0.8s ease both;
+    }
+
+    .avatar-ring {
+      position: absolute;
+      inset: -6px;
+      border-radius: 50%;
+      background: conic-gradient(from 0deg, #7c5cbf, #4f8ef7, #a78bfa, #7c5cbf);
+      animation: spin 6s linear infinite;
+    }
+
+    .avatar-ring-mask {
+      position: absolute;
+      inset: 2px;
+      border-radius: 50%;
+      background: var(--bg);
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .avatar {
+      position: relative;
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      overflow: hidden;
+      z-index: 1;
+    }
+
+    .avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .avatar-placeholder {
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, #1e1040, #2a1a5e);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Syne', sans-serif;
+      font-size: 2.5rem;
+      font-weight: 800;
+      color: var(--accent3);
+      letter-spacing: -2px;
+    }
+
+    /* ── name & title ── */
+    .name {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(1.8rem, 6vw, 2.4rem);
+      font-weight: 800;
+      letter-spacing: -1px;
+      text-align: center;
+      line-height: 1.1;
+      animation: fadeUp 0.8s 0.1s ease both;
+      background: linear-gradient(135deg, #ffffff 30%, #a78bfa 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .tagline {
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-top: 6px;
+      text-align: center;
+      animation: fadeUp 0.8s 0.15s ease both;
+    }
+
+    .degree {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.9rem;
+      color: var(--muted);
+      margin-top: 8px;
+      text-align: center;
+      font-style: italic;
+      animation: fadeUp 0.8s 0.2s ease both;
+    }
+
+    /* ── divider ── */
+    .divider {
+      width: 40px;
+      height: 2px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      border-radius: 2px;
+      margin: 24px 0;
+      animation: fadeUp 0.8s 0.25s ease both;
+    }
+
+    /* ── about ── */
+    .about {
+      font-size: 0.9rem;
+      line-height: 1.8;
+      text-align: center;
+      color: #b0aac0;
+      max-width: 400px;
+      animation: fadeUp 0.8s 0.3s ease both;
+      font-family: 'DM Sans', sans-serif;
+    }
+
+    /* ── skills ── */
+    .skills-wrap {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 24px;
+      animation: fadeUp 0.8s 0.35s ease both;
+    }
+
+    .skill {
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      padding: 5px 14px;
+      border-radius: 100px;
+      border: 1px solid var(--border);
+      background: var(--card);
+      color: #c4bedd;
+      backdrop-filter: blur(10px);
+      transition: all 0.3s ease;
+    }
+    .skill:hover {
+      border-color: var(--accent3);
+      color: var(--accent3);
+      background: rgba(167,139,250,0.1);
+      transform: translateY(-2px);
+    }
+
+    /* ── section label ── */
+    .section-label {
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.65rem;
+      font-weight: 600;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-top: 36px;
+      margin-bottom: 14px;
+      text-align: center;
+      animation: fadeUp 0.8s 0.4s ease both;
+    }
+
+    /* ── social links ── */
+    .links {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      gap: 10px;
+      animation: fadeUp 0.8s 0.45s ease both;
+    }
+
+    .link-card {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 14px 20px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: var(--card);
+      text-decoration: none;
+      color: var(--text);
+      backdrop-filter: blur(12px);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .link-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      border-radius: inherit;
+    }
+
+    .link-card:hover {
+      transform: translateY(-3px) scale(1.01);
+      border-color: rgba(255,255,255,0.15);
+      box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+    }
+
+    .link-card:hover::before { opacity: 1; }
+
+    /* per-platform colors */
+    .link-tiktok:hover { border-color: rgba(105,201,208,0.4); box-shadow: 0 12px 40px rgba(105,201,208,0.1); }
+    .link-tiktok::before { background: linear-gradient(135deg, rgba(105,201,208,0.07), transparent); }
+
+    .link-linkedin:hover { border-color: rgba(10,102,194,0.5); box-shadow: 0 12px 40px rgba(10,102,194,0.15); }
+    .link-linkedin::before { background: linear-gradient(135deg, rgba(10,102,194,0.1), transparent); }
+
+    .link-upwork:hover { border-color: rgba(20,190,100,0.5); box-shadow: 0 12px 40px rgba(20,190,100,0.12); }
+    .link-upwork::before { background: linear-gradient(135deg, rgba(20,190,100,0.08), transparent); }
+
+    .link-shopee:hover { border-color: rgba(238,77,45,0.4); box-shadow: 0 12px 40px rgba(238,77,45,0.1); }
+    .link-shopee::before { background: linear-gradient(135deg, rgba(238,77,45,0.07), transparent); }
+
+    .link-instagram:hover { border-color: rgba(225,48,108,0.4); box-shadow: 0 12px 40px rgba(225,48,108,0.1); }
+    .link-instagram::before { background: linear-gradient(135deg, rgba(225,48,108,0.07), transparent); }
+
+    .link-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 1.2rem;
+    }
+
+    .link-icon svg { width: 22px; height: 22px; }
+
+    .link-info { flex: 1; }
+
+    .link-platform {
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--muted);
+      display: block;
+    }
+
+    .link-handle {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 400;
+      color: var(--text);
+      display: block;
+      margin-top: 1px;
+    }
+
+    .link-arrow {
+      color: var(--muted);
+      font-size: 1rem;
+      transition: transform 0.3s ease, color 0.3s ease;
+    }
+    .link-card:hover .link-arrow { transform: translateX(4px); color: var(--text); }
+
+    /* ── footer ── */
+    .footer {
+      margin-top: 48px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.65rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.15);
+      text-align: center;
+      animation: fadeUp 0.8s 0.6s ease both;
+    }
+
+    /* ── animations ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Nama Kamu</h1>
-        <p class="tagline">Android Developer | Belajar Web</p>
-        <p class="bio">Halo! Saya seorang developer yang suka bikin aplikasi Android dan sekarang lagi belajar web development.</p>
 
-        <div class="skills">
-            <h2>Skills</h2>
-            <span class="badge">Kotlin</span>
-            <span class="badge">Android Studio</span>
-            <span class="badge">HTML</span>
-            <span class="badge">CSS</span>
-        </div>
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
 
-        <div class="contact">
-            <a href="https://instagram.com/usernamu">Instagram</a>
-            <a href="https://github.com/usernamu">GitHub</a>
-        </div>
+  <div class="wrapper">
+
+    <!-- Avatar -->
+    <div class="avatar-wrap">
+      <div class="avatar-ring"></div>
+      <div class="avatar-ring-mask"></div>
+      <div class="avatar">
+        <!-- Ganti src="foto.jpg" dengan nama file fotomu -->
+        <!-- Kalau belum ada foto, hapus tag <img> dan biarkan placeholder tampil -->
+        <img src="FOTOPROFIL.jpg" alt="Prayoga Setiawan" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+        <div class="avatar-placeholder" style="display:none;">PS</div>
+      </div>
     </div>
+
+    <!-- Name & Title -->
+    <h1 class="name">Prayoga Setiawan</h1>
+    <p class="tagline">Electrical Engineer &amp; Developer</p>
+    <p class="degree">D3 Teknik Elektro</p>
+
+    <div class="divider"></div>
+
+    <!-- About -->
+    <p class="about">
+      Mahasiswa teknik yang passionate di dunia teknologi, Internet of Things, pengembangan aplikasi, dan peluang digital.
+      Terbuka untuk kolaborasi &amp; project menarik.
+    </p>
+
+    <!-- Skills -->
+    <div class="skills-wrap">
+      <span class="skill">Kotlin</span>
+      <span class="skill">Android Dev</span>
+      <span class="skill">IoT</span>
+      <span class="skill">Elektronika</span>
+      <span class="skill">Freelance</span>
+      <span class="skill">Affiliate</span>
+    </div>
+
+    <!-- Social Links -->
+    <p class="section-label">Find me on</p>
+
+    <div class="links">
+
+      <!-- Instagram -->
+      <a href="https://instagram.com/s.e.p.s.098" target="_blank" class="link-card link-instagram">
+        <div class="link-icon" style="background:rgba(225,48,108,0.12);">
+          <svg viewBox="0 0 24 24" fill="none" stroke="rgba(225,48,108,0.9)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="rgba(225,48,108,0.9)" stroke="none"/>
+          </svg>
+        </div>
+        <div class="link-info">
+          <span class="link-platform">Instagram</span>
+          <span class="link-handle">@prayogasss</span>
+        </div>
+        <span class="link-arrow">→</span>
+      </a>
+
+      <!-- TikTok -->
+      <a href="https://www.tiktok.com/@seps098?_r=1&_t=ZS-94AmeOtqNmr" target="_blank" class="link-card link-tiktok">
+        <div class="link-icon" style="background:rgba(105,201,208,0.1);">
+          <svg viewBox="0 0 24 24" fill="rgba(105,201,208,0.9)" xmlns="http://www.w3.org/2000/svg">
+            <path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.27 6.27 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.18 8.18 0 004.78 1.52V6.76a4.85 4.85 0 01-1.01-.07z"/>
+          </svg>
+        </div>
+        <div class="link-info">
+          <span class="link-platform">TikTok</span>
+          <span class="link-handle">@prayogasss</span>
+        </div>
+        <span class="link-arrow">→</span>
+      </a>
+
+      <!-- LinkedIn -->
+      <a href="https://www.linkedin.com/in/prayoga-setiawan-83a659287?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app" target="_blank" class="link-card link-linkedin">
+        <div class="link-icon" style="background:rgba(10,102,194,0.12);">
+          <svg viewBox="0 0 24 24" fill="rgba(10,102,194,0.95)" xmlns="http://www.w3.org/2000/svg">
+            <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+          </svg>
+        </div>
+        <div class="link-info">
+          <span class="link-platform">LinkedIn</span>
+          <span class="link-handle">Prayoga Setiawan</span>
+        </div>
+        <span class="link-arrow">→</span>
+      </a>
+
+      <!-- Upwork -->
+      <a href="https://www.upwork.com/freelancers/~014050194ba86cbe98?mp_source=share" target="_blank" class="link-card link-upwork">
+        <div class="link-icon" style="background:rgba(20,190,100,0.1);">
+          <svg viewBox="0 0 24 24" fill="rgba(20,190,100,0.9)" xmlns="http://www.w3.org/2000/svg">
+            <path d="M18.561 13.158c-1.102 0-2.135-.467-3.074-1.227l.228-1.076.008-.042c.207-1.143.849-3.06 2.839-3.06 1.492 0 2.703 1.212 2.703 2.703-.001 1.489-1.212 2.702-2.704 2.702zm0-8.14c-2.539 0-4.51 1.649-5.31 4.366-1.22-1.834-2.148-4.036-2.687-5.892H7.828v7.112c-.002 1.406-1.141 2.546-2.547 2.546-1.405 0-2.543-1.14-2.543-2.546V3.492H0v7.112c0 2.917 2.37 5.295 5.281 5.295 2.913 0 5.283-2.378 5.283-5.295v-1.19c.529 1.107 1.182 2.229 1.974 3.221l-1.673 7.873h2.797l1.213-5.71c1.063.679 2.285 1.109 3.686 1.109 3 0 5.439-2.452 5.439-5.45 0-3-2.439-5.439-5.439-5.439z"/>
+          </svg>
+        </div>
+        <div class="link-info">
+          <span class="link-platform">Upwork</span>
+          <span class="link-handle">Hire me as Freelancer</span>
+        </div>
+        <span class="link-arrow">→</span>
+      </a>
+
+      <!-- Shopee Affiliate -->
+      <a href="https://collshp.com/sobatelektronika?share_channel_code=1" target="_blank" class="link-card link-shopee">
+        <div class="link-icon" style="background:rgba(238,77,45,0.1);">
+          <svg viewBox="0 0 24 24" fill="rgba(238,77,45,0.9)" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm0 4.5a3.5 3.5 0 110 7 3.5 3.5 0 010-7zm6 13.5H6v-.75c0-2 2.686-3.5 6-3.5s6 1.5 6 3.5V18z"/>
+          </svg>
+        </div>
+        <div class="link-info">
+          <span class="link-platform">Shopee Affiliate</span>
+          <span class="link-handle">Cek rekomendasi produkku</span>
+        </div>
+        <span class="link-arrow">→</span>
+      </a>
+
+    </div>
+
+    <p class="footer">© 2026 Prayoga Setiawan &nbsp;·&nbsp; Made with passion</p>
+
+  </div>
+
 </body>
 </html>
